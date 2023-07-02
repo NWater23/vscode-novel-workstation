@@ -3,8 +3,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { getConfig } from "./config";
 import { deadLineFolderPath } from "./extension";
+import { countChineseCharacter } from "./chinesecount"
 
-//fsモジュールの使い方 https://qiita.com/oblivion/items/2725a4b3ca3a99f8d1a3
+//如何使用FS模块 https://qiita.com/oblivion/items/2725a4b3ca3a99f8d1a3
 export default function compileDocs(): void {
   const projectName =
     deadLineFolderPath() == ""
@@ -19,19 +20,19 @@ export default function compileDocs(): void {
     deadLineFolderPath() == "" ? draftRoot() : deadLineFolderPath();
 
   console.log("ProjectName: ", projectName);
-  console.log("締め切りフォルダー", deadLineFolderPath());
+  console.log("截止文件夹", deadLineFolderPath());
 
   //      publishフォルダがなければ作る
   if (!fs.existsSync(projectPath + "/publish")) {
     fs.mkdirSync(projectPath + "/publish");
   }
 
-  //  空のファイルをつくる
+  //  创建一个空文件
   const compiledTextFilePath = projectPath + "/publish/" + projectName + ".txt";
   try {
     fs.writeFileSync(compiledTextFilePath, "");
   } catch (err) {
-    console.log("ファイル書き込み時のエラー", err);
+    console.log("写入文件时发生错误", err);
   }
 
   //  テキストを書き込む
@@ -58,7 +59,7 @@ export function draftRoot(): string {
     const projectPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
     let draftRootPath = projectPath;
     const projectFiles = fs.readdirSync(projectPath);
-    //「原稿」あるいは「Draft」フォルダーを原稿フォルダのルートにする。
+    //将「原稿」或者「Draft」作为文件夹Path
     if (
       projectFiles.includes("Draft") &&
       fs.statSync(projectPath + "/Draft").isDirectory()
@@ -69,6 +70,11 @@ export function draftRoot(): string {
       fs.statSync(projectPath + "/原稿").isDirectory()
     ) {
       draftRootPath = draftRootPath + "/原稿";
+    } else if (
+      projectFiles.includes("src") &&
+      fs.statSync(projectPath + "/src").isDirectory()
+    ) {
+      draftRootPath = draftRootPath + "/src";
     }
 
     return draftRootPath;
@@ -90,7 +96,7 @@ type FileList = {
   length: number;
 };
 
-//fileList()は、ファイルパスと（再帰処理用の）ディレクトリ深度を受け取って、ファイルリストの配列と総文字数を返す。
+//Filelist()接收文件路径的深度和目录深度（用于递归），并返回文件列表的数组和字符总数。
 export function fileList(dirPath: string): FileList {
   let characterCount = 0;
   const filesInFolder = getFiles(dirPath);
@@ -118,28 +124,28 @@ export function fileList(dirPath: string): FileList {
       files.push(containerFiles.files);
     } else if (
       dirent.isFile() &&
-      [".txt"].includes(path.extname(dirent.name))
+      [".txt",".md",".markdown"].includes(path.extname(dirent.name))
     ) {
-      //文字数カウントテスト
+      // 字符计数
       let readingFile = fs.readFileSync(
         path.join(dirPath, dirent.name),
         "utf-8"
       );
-      //カウントしない文字を除外 from https://github.com/8amjp/vsce-charactercount by MIT license
+      //排除未从https://github.com/8amjp/vsce-charactercount计算的字符
       readingFile = readingFile
-        .replace(/\s/g, "") // すべての空白文字
-        .replace(/《(.+?)》/g, "") // ルビ範囲指定記号とその中の文字
-        .replace(/[|｜]/g, "") // ルビ開始記号
-        .replace(/<!--(.+?)-->/, ""); // コメントアウト
+        .replace(/\s/g, "") // 所有空白字符
+        .replace(/《(.+?)》/g, "") // Ruby(ルビ)区域指定的符号及其字符
+        .replace(/[|｜]/g, "") // Ruby(ルビ)启动符号
+        .replace(/<!--(.+?)-->/, ""); // 注释
       files.push({
         dir: path.join(dirPath, dirent.name),
         name: dirent.name,
-        length: readingFile.length,
+        length: countChineseCharacter(readingFile),
       });
-      characterCount += readingFile.length;
+      characterCount += countChineseCharacter(readingFile);
     }
   }
-  //ファイルリストの配列と総文字数を返す
+  //返回文件列表和字符总数
   return {
     label: labelOfList,
     files: files.flat(),
@@ -152,7 +158,7 @@ function getFiles(dirPath: string) {
   const filesInFolder = fs.existsSync(dirPath)
     ? fs.readdirSync(dirPath, { withFileTypes: true })
     : [];
-  if (!filesInFolder) console.log(`${dirPath}が見つかりませんでした`);
+  if (!filesInFolder) console.log(`找不到"${dirPath}"`);
   return filesInFolder;
 }
 
@@ -193,7 +199,7 @@ export function draftsObject(dirPath: string): FileNode[] {
       results.push(directory);
     } else if (
       dirent.isFile() &&
-      [".txt"].includes(path.extname(dirent.name))
+      [".txt",".md",".markdown"].includes(path.extname(dirent.name))
     ) {
       //文字数カウントテスト
       let readingFile = fs.readFileSync(
@@ -210,7 +216,7 @@ export function draftsObject(dirPath: string): FileNode[] {
       const fileNode = {
         dir: path.join(dirPath, dirent.name),
         name: dirent.name,
-        length: readingFile.length,
+        length: countChineseCharacter(readingFile),
       };
       results.push(fileNode);
     }

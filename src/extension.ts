@@ -66,7 +66,7 @@ function emptyPort(callback: any) {
 }
 
 
-//コマンド登録
+//注册命令
 export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("Novel.compile-draft", compileDocs)
@@ -143,14 +143,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
       // InputBoxを呼び出す。awaitで完了を待つ。
       let result = await vscode.window.showInputBox({
-        prompt: `設定する文字数を入力してください。数字を入力せずにEnterを押すと締め切りフォルダーの設定を解除します`,
-        placeHolder: `現在の文字数：${currentLength}`,
+        prompt: `输入你想设置的字符数。 在没有输入数字的情况下按下回车键，将取消对最后期限文件夹的设置。`,
+        placeHolder: `当前字符数: ${currentLength}`,
       });
-      // ここで入力を処理する
+      // 头输入此处
       if (result) {
         try {
           parseInt(result);
-          // 入力が正常に行われている
+          // 输入正常执行
           context.workspaceState.update("deadlineFolderPath", path);
           context.workspaceState.update("deadlineTextCount", result);
           deadlineFolderPath = path;
@@ -159,15 +159,15 @@ export function activate(context: vscode.ExtensionContext): void {
           characterCounter._setCounterToFolder(path, parseInt(result));
 
           vscode.window.showInformationMessage(
-            `目標の文字数を: ${result}文字に設定しました`
+            `目标字符数: ${result}设置为字符数`
           );
         } catch (error) {
-          vscode.window.showWarningMessage(`数字を入力してください`);
+          vscode.window.showWarningMessage(`设置字符数时发生错误`);
           result = "0";
         }
       } else {
-        // 入力がキャンセルされた
-        vscode.window.showWarningMessage(`目標文字数は設定しません`);
+        // 输入已取消
+        vscode.window.showWarningMessage(`目标字符数量未设置`);
         characterCounter._setCounterToFolder("", 0);
         context.workspaceState.update("deadlineFolderPath", null);
         context.workspaceState.update("deadlineTextCount", null);
@@ -176,7 +176,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
         result = "0";
       }
-      //ツリービュー更新
+      //树视图更新
       vscode.commands.executeCommand("draftTree.refresh");
     })
   );
@@ -381,7 +381,7 @@ function launchserver(originEditor: vscode.TextEditor) {
     //    vscode.window.showInformationMessage('Hello, world!');
     const panel = vscode.window.createWebviewPanel(
       "preview", // Identifies the type of the webview. Used internally
-      "原稿プレビュー http://" + serversHostname + ":" + servicePort, // Title of the panel displayed to the user
+      "预览 http://" + serversHostname + ":" + servicePort, // Title of the panel displayed to the user
       vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
       {
         enableScripts: true,
@@ -406,7 +406,7 @@ function launchserver(originEditor: vscode.TextEditor) {
   </html>`;
   } else {
     vscode.window.showInformationMessage(
-      `http://${serversHostname}:${servicePort} でサーバーを起動しました`
+      `Web服务已上线: http://${serversHostname}:${servicePort}`
     );
   }
 }

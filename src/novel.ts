@@ -25,7 +25,7 @@ export class draftTreeProvider
   //draftTreeOrign = () => draftsObject(draftRoot());
   private watch: vscode.FileSystemWatcher;
   constructor() {
-    this.watch = vscode.workspace.createFileSystemWatcher("**/*.txt");
+    this.watch = vscode.workspace.createFileSystemWatcher("**/*.{txt,md,markdown}");
 
     this.watch.onDidChange((uri) => {
       // console.log("changed!!!", uri);
@@ -55,7 +55,7 @@ export class draftTreeProvider
   }
 
   getTreeItem(element: draftTreeItem): draftTreeItem | draftTreeItem {
-    //ツリーの最小単位を返す
+    //返回树的最小单位
     return element;
   }
 
@@ -101,10 +101,10 @@ class draftTreeItem extends vscode.TreeItem {
     const filePath = vscode.Uri.file(draftItem.dir.split('\\').join('/'));
 
     this.label = draftItem.name.replace(
-      /^([0-9]+[-_\s]){0,1}(.+)(.txt)$/,
+      /^([0-9]+[-_\s]){0,1}(.+)(\.txt|\.md|\.markdown)$/,
       "$2"
     );
-    this.description = `:${Intl.NumberFormat().format(draftItem.length)}文字`;
+    this.description = `:${Intl.NumberFormat().format(draftItem.length)}字`;
     this.resourceUri = filePath;
 
     if (!draftItem.children) {
@@ -115,14 +115,14 @@ class draftTreeItem extends vscode.TreeItem {
 
     if (draftItem.dir == deadLineFolderPath()){
       this.iconPath = new vscode.ThemeIcon("folder-active");
-      this.description = `:${Intl.NumberFormat().format(draftItem.length)}/${deadLineTextCount()}文字`;
+      this.description = `:${Intl.NumberFormat().format(draftItem.length)}/${deadLineTextCount()}字`;
     }
 
     this.children = draftItem.children;
     if (draftItem.children === undefined) {
       this.command = {
         command: "vscode.open",
-        title: "ファイルを開く",
+        title: "打开文件",
         arguments: [filePath],
       };
       this.contextValue = "file";

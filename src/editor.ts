@@ -17,7 +17,7 @@ export function editorText(originEditor: OriginEditor): string {
   let myHTML = "";
 
   let cursorTaggedHtml = "";
-  // カーソル位置
+  // 光标位置
   if (text.slice(cursorOffset, cursorOffset + 1) == "\n") {
     cursorTaggedHtml =
     text.slice(0, cursorOffset) +
@@ -54,7 +54,7 @@ export function editorText(originEditor: OriginEditor): string {
 
 export function markUpHtml(myHtml: string) {
   let taggedHTML = myHtml;
-  //configuration 読み込み
+  //读取 configuration
   const config = getConfig();
   const userRegex = config.userRegex;
   if (userRegex.length > 0) {
@@ -209,14 +209,14 @@ export class MyCodelensProvider implements vscode.CodeLensProvider {
         const prevLens = {
           command: "Novel.openfile",
           title: prevTitle + " ……"+ prevText,
-          tooltip: "前のシーンのファイルを開く",
+          tooltip: "打开上一个场景的文件",
           arguments: [prevUrl],
         };
 
         const nextLens = {
           command: "Novel.openfile",
           title: nextTitle,
-          tooltip: "次のシーンのファイルを開く",
+          tooltip: "打开下一个场景的文件",
           arguments: [nextUrl],
         };
 
@@ -269,8 +269,8 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
   let prevDocText = "";
   let nextDocText = "";
 
-  //console.log("探索", docIndex, myFileList.files[docIndex]);
-  //前のシーンファイルを探索
+  //console.log("搜索", docIndex, myFileList.files[docIndex]);
+  //搜索上一个场景文件
   let prevSearchIndex = docIndex - 1;
   while (prevSearchIndex >= 0) {
     if (myFileList.files[prevSearchIndex].dir) {
@@ -280,9 +280,9 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
     }
     prevSearchIndex = prevSearchIndex - 1;
   }
-  //console.log("pre探索結果", prevDocIndex, myFileList.files[prevDocIndex!]);
+  //console.log("pre搜索結果", prevDocIndex, myFileList.files[prevDocIndex!]);
 
-  //次のファイルを探索
+  //搜索以下文件
   let nextSearchIndex = docIndex + 1;
   while (nextSearchIndex < myFileList.files.length) {
     if (myFileList.files[nextSearchIndex].dir) {
@@ -292,9 +292,9 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
     }
     nextSearchIndex++;
   }
-  //console.log("next探索結果", nextDocIndex, myFileList.files[nextDocIndex!]);
+  //console.log("next搜索結果", nextDocIndex, myFileList.files[nextDocIndex!]);
 
-  // 前のファイルが有効な場合
+  // 当上一个文件有效时
   if (prevDocIndex != null) {
     // console.log("nextDoc", myFileList.files[prevDocIndex]);
     prevDocUrl = vscode.Uri.file(myFileList.files[prevDocIndex].dir!);
@@ -304,7 +304,7 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
     prevDocText = dataString;
   }
 
-  // 次のファイルが有効な場合
+  // 当以下文件有效时
   if (nextDocIndex != null) {
     // console.log("nextDoc", myFileList.files[nextDocIndex]);
     nextDocUrl = vscode.Uri.file(myFileList.files[nextDocIndex].dir!);

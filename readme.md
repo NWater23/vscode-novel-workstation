@@ -1,3 +1,16 @@
+# VS Code 小说工作站
+
+*Based on [/ttrace/vscode-language-japanese-novel](https://github.com/ttrace/vscode-language-japanese-novel)*
+
+## What's different
+
+- 为中文用户适配，专精于中文小说创作（并未删除对日语的适配，但是可能工作不良）
+- 提供AI功能（需要自行架设后端）
+
+> **Warning** 请勿直接从VS Code扩展商店安装，建议自行按需修改后编译安装，你将会有很多参数、细节需要自行修改。
+
+------
+
 # Visual Studio小説モード
 
 Visual Studio Codeで小説を執筆するための機能拡張です。

@@ -21,6 +21,8 @@ import { totalLength, draftRoot } from "./compile";
 import simpleGit, { SimpleGit } from "simple-git";
 import { distance } from "fastest-levenshtein";
 
+import { countChineseCharacter } from "./chinesecount"
+
 let projectCharacterCountNum = 0;
 let countingFolderPath = "";
 let countingTarget = "";
@@ -113,21 +115,21 @@ export class CharacterCounter {
     let editDistance = "";
     if (this.ifEditDistance) {
       if (this.editDistance == -1) {
-        editDistance = `／$(compare-changes)$(sync)文字`;
+        editDistance = `／$(compare-changes)$(sync)字`;
         this._updateEditDistanceDelay();
       } else if (this.keyPressFlag) {
         editDistance = `／$(compare-changes)${Intl.NumberFormat().format(
           this.editDistance
-        )}$(sync)文字`;
+        )}$(sync)字`;
       } else {
         editDistance = `／$(compare-changes)${Intl.NumberFormat().format(
           this.editDistance
-        )}文字`;
+        )}字`;
       }
     }
 
     if (this._countingFolder != "") {
-      //締め切りフォルダーが設定されている時_countingTargetNum
+      //设置截止文件夹时_countingTargetNum
       let targetNumberTextNum = this._folderCount.amountLengthNum;
       let targetNumberText = Intl.NumberFormat().format(targetNumberTextNum);
       if (this._isEditorChildOfTargetFolder) {
@@ -138,32 +140,28 @@ export class CharacterCounter {
       if (this._countingTargetNum != 0) {
         targetNumberText += "/" + countingTarget;
       }
-      this._statusBarItem.text = ` ${totalCharacterCount}文字  $(folder-opened) ${this._folderCount.label} ${targetNumberText}文字  $(note) ${characterCount} 文字${editDistance}`;
+      this._statusBarItem.text = ` ${totalCharacterCount}字  $(folder-opened) ${this._folderCount.label} ${targetNumberText}字  $(note) ${characterCount} 字${editDistance}`;
     } else {
-      this._statusBarItem.text = `$(book) ${totalCharacterCount}文字／$(note) ${characterCount} 文字${editDistance}`;
+      this._statusBarItem.text = `$(book) ${totalCharacterCount}字／$(note) ${characterCount} 字${editDistance}`;
     }
     this._statusBarItem.show();
   }
 
   public _getCharacterCount(doc: TextDocument): number {
-    let docContent = doc.getText();
-    // カウントに含めない文字を削除する
+    let docContent:string = doc.getText();
+    // 删除未包含在计数中的字符
     docContent = docContent
-      .replace(/\s/g, "") // すべての空白文字
-      .replace(/《(.+?)》/g, "") // ルビ範囲指定記号とその中の文字
-      .replace(/[|｜]/g, "") // ルビ開始記号
-      .replace(/<!--(.+?)-->/, ""); // コメントアウト
-    let characterCount = 0;
-    if (docContent !== "") {
-      characterCount = docContent.length;
-    }
-    return characterCount;
+      .replace(/((\S+?)|\{(.+?)\})?@([a-zA-Z0-9_]*?)(\[[a-zA-Z0-9_\s]+?\])?/g, "") // 实体标记
+      .replace(/《(.+?)》/g, "") // 红宝石范围指定的符号和字符
+      .replace(/[|｜]/g, "") // 红宝石启动符号
+      .replace(/<!--(.+?)-->/, ""); // 注释
+    return countChineseCharacter(docContent);
   }
 
   public _updateProjectCharacterCount(): void {
     projectCharacterCountNum = totalLength(draftRoot());
     if (this._countingFolder != "") {
-      //締め切りフォルダーの更新
+      //截止日期更新
       this._folderCount = {
         label: path.basename(this._countingFolder),
         amountLengthNum: totalLength(this._countingFolder),
@@ -297,7 +295,7 @@ export class CharacterCounter {
                 .then((logsLatest) => {
                   if (logsLatest?.total === 0) {
                     window.showInformationMessage(
-                      `比較対象になるファイルがGitにコミットされていないようです`
+                      `无法比较历史记录：文件似乎在git存储库中不可用`
                     );
                     this.ifEditDistance = false;
                     this.latestText = "";
@@ -305,12 +303,12 @@ export class CharacterCounter {
                   } else {
                     latestHash = logsLatest.all[0].hash;
                     showString = latestHash + ":" + relatevePath;
-                    console.log("最終更新: ", showString);
+                    console.log("最后更新: ", showString);
                     git
                       .show(showString)
                       .then((showLog) => {
                         console.log(
-                          "最終更新テキスト: ",
+                          "最后更新内容：",
                           typeof showLog,
                           showLog
                         );
@@ -345,7 +343,7 @@ export class CharacterCounter {
           })
           .catch((err) => {
             console.error("failed:", err);
-            // window.showInformationMessage(`Gitのレポジトリを確かめてください`);
+            // window.showInformationMessage(`请检查GIT存储库`);
             this.ifEditDistance = false;
             this.latestText = "";
             this.updateCharacterCount();
@@ -435,7 +433,7 @@ export class CharacterCounterController {
 
   private _onFocusChanged() {
     this._characterCounter._setIfChildOfTarget();
-    //編集処理の初期化
+    //编辑处理的初始化
     this._characterCounter.ifEditDistance = false;
     this._characterCounter.latestText = "\n";
     this._characterCounter.editDistance = -1;

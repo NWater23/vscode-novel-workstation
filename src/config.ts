@@ -30,7 +30,7 @@ export function getConfig(): NovelSettings {
       ? "vertical-rl"
       : "horizontal-tb";
   const lineLength = config.get<number>("preview.lineLength", 40);
-  const fontSize = 1 / lineLength; // フォントサイズは行長分の１
+  const fontSize = 1 / lineLength; // 字体尺寸为1
   const linesPerPage = config.get<number>("preview.linesPerPage", 10);
   const lineHeight = fontSize * lineHeightRate;
   const pageStarting = config.get<string>("preview.pageStarting", "左");

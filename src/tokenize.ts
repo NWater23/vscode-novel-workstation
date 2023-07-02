@@ -81,7 +81,7 @@ export function activateTokenizer(
   );
 
   const tokenizeSetting = getConfig().semanticHighligting;
-  console.log("ハイライト！", tokenizeSetting);
+  console.log("强调！", tokenizeSetting);
   tokenizeFlag = typeof tokenizeSetting == "boolean" ? tokenizeSetting : true;
 }
 
@@ -109,7 +109,7 @@ export class DocumentSemanticTokensProvider
         const startTime = performance.now();
 
         kuromojiBuilder.build(async (err: any, tokenizer: any) => {
-          // 辞書がなかったりするとここでエラーになります(´・ω・｀)
+          // 如果您没有字典，您将在此处遇到错误（´・ω・｀）
           if (err) {
             console.dir("Kuromoji initialize error:" + err.message);
             throw err;
@@ -119,7 +119,7 @@ export class DocumentSemanticTokensProvider
           let i = 0;
           //const line = lines[i];
 
-          // tokenizer.tokenize に文字列を渡すと、その文を形態素解析してくれます。
+          // 如果将字符串传递给tokenizer.Tokenize，它将分析句子。
           const kuromojiToken = tokenizer.tokenize(document.getText());
 
           // console.dir(kuromojiToken);
@@ -143,7 +143,7 @@ export class DocumentSemanticTokensProvider
             let wordLength = 0;
             wordLength = mytoken.surface_form.length;
 
-            //改行処理
+            //换行处理
             if (mytoken.surface_form.match(/\n/)) {
               i += mytoken.surface_form.match(/\n/g).length;
               //複数の改行が重なるとKuromojiは'\n\n'のように返す。
@@ -214,7 +214,7 @@ export class DocumentSemanticTokensProvider
 
             if (
               kind == "noun" &&
-              mytoken.pos_detail_1 == "サ変接続" &&
+              mytoken.pos_detail_1 == "サ変接続" && // 连词
               nextToken.length != 0
             ) {
               kind = (nextToken.conjugated_type.match(/^サ変/))? "verb" : "noun";
@@ -222,7 +222,7 @@ export class DocumentSemanticTokensProvider
 
             let tokenModifireType = "";
 
-            //会話モディファイア
+            //对话修饰符
             if (mytoken.surface_form == "「") {
               isDialogue = true;
             }
@@ -237,21 +237,21 @@ export class DocumentSemanticTokensProvider
               kind = "bracket";
             }
 
-            //引用モディファイア
+            //引用修饰符
             if (mytoken.surface_form == "『") isQuote = true;
             if (isQuote == true) {
               tokenModifireType = "quote";
             }
             if (mytoken.surface_form == "』") isQuote = false;
 
-            //固有名詞モディファイア
+            //专名词修饰符
             if (mytoken.surface_form == "〈") isMarkedProperNoun = true;
             if (isMarkedProperNoun == true) {
               kind = "proper_noun";
             }
             if (mytoken.surface_form == "〉") isMarkedProperNoun = false;
 
-            //ルビモディファイア
+            //注音(Ruby)修饰符
             if (mytoken.surface_form == "《") isRuby = true;
             if (isRuby == true) {
               tokenModifireType = "aozora";
@@ -276,7 +276,7 @@ export class DocumentSemanticTokensProvider
               kind = "bracket";
             }
 
-            //コメントアウト
+            //注释
             if (mytoken.surface_form === "<!--") {
               isComment = true;
               kind = "bracket";
@@ -308,7 +308,7 @@ export class DocumentSemanticTokensProvider
             openOffset = closeOffset;
             if (j == kuromojiToken.length - 1) {
               const endTime = performance.now();
-              console.log("T処理時間！", endTime - startTime);
+              console.log("Tokenize用时！", endTime - startTime);
 
               resolve(builder.build());
               //const builder = new vscode.SemanticTokensBuilder();
@@ -462,12 +462,12 @@ export function morphemeBuilder(text: string) {
   });
 }
 
-// 以下、たる変換
+// 下面，转换
 export async function changeTenseAspect() {
   const editor = vscode.window.activeTextEditor;
   const document = vscode.window.activeTextEditor?.document;
   const lineString = document?.lineAt(editor!.selection.active.line).text;
-  //空行の時は動作しない
+  //它是空的
   if (lineString == "" || lineString == "　" || lineString == undefined) return;
   const cursorPosition = editor!.selection.start;
 
@@ -519,7 +519,7 @@ export async function changeTenseAspect() {
           /(.+)[ぐ]/,
           "$1いだ"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -540,7 +540,7 @@ export async function changeTenseAspect() {
           /(.+)[す]/,
           "$1した"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -561,7 +561,7 @@ export async function changeTenseAspect() {
           /(.+)[くる]/,
           "$1った"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -582,7 +582,7 @@ export async function changeTenseAspect() {
           /(.+)[ぬむぶ]/,
           "$1んだ"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -603,7 +603,7 @@ export async function changeTenseAspect() {
           /(.+)う/,
           "$1うた"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -626,7 +626,7 @@ export async function changeTenseAspect() {
         } else {
           attributedVerbeForm = token.surface_form.replace(/(.+)る/, "$1た");
         }
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -647,7 +647,7 @@ export async function changeTenseAspect() {
           /(.+)[くつう]/,
           "$1った"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -668,7 +668,7 @@ export async function changeTenseAspect() {
           /(.+)[く]/,
           "$1いた"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -689,7 +689,7 @@ export async function changeTenseAspect() {
           /(.+)る/g,
           "$1た"
         );
-        // range作成。元のトークンを置き換える場合
+        // 替换原始Token前创建范围(Range)
         const verbPositionStart = new Position(
           cursorPosition.line,
           token.word_position - 1
@@ -727,23 +727,23 @@ export async function changeTenseAspect() {
 
 export async function addRuby() {
   const editor = vscode.window.activeTextEditor;
-  if (editor == null) return; // エディターがない時は動作しない
+  if (editor == null) return; // 没有编辑时不起作用
   const document = vscode.window.activeTextEditor?.document;
   const lineString = document?.lineAt(editor.selection.active.line).text;
   const selection = editor.selection;
 
-  //空行の時は動作しない
+  //它是空的
   if (lineString == "" || lineString == "　" || lineString == undefined) return;
-  //複数行の時は動作しない
+  //多行时不起作用
   if (!selection.isSingleLine) return;
 
-  //選択範囲がある場合
+  //如果有选择
   if (!selection.isEmpty) {
-    // console.log("ルビ選択範囲あり", editor.document.getText(selection));
+    // console.log("Ruby选择可用", editor.document.getText(selection));
     const baseString = editor.document.getText(selection);
     const ruby = await vscode.window.showInputBox({
-      title: "ルビの入力",
-      prompt: "ルビを入力してください",
+      title: "注音(Ruby)录入",
+      prompt: "请输入注音(Ruby)",
       placeHolder: baseString,
     });
     if (ruby == "") return;
@@ -777,10 +777,10 @@ export async function addRuby() {
         return String.fromCharCode(s.charCodeAt(0) - 0x60);
       })
     : "";
-  // console.log("ターゲット", frontWordsList, targetWord, placeHolderRuby);
+  // console.log("目标", frontWordsList, targetWord, placeHolderRuby);
   const ruby = await vscode.window.showInputBox({
-    title: "ルビの入力",
-    prompt: "ルビを入力してください",
+    title: "注音(Ruby)录入",
+    prompt: "请输入注音(Ruby)",
     placeHolder: placeHolderRuby,
     value: placeHolderRuby,
   });
@@ -803,7 +803,7 @@ export async function addRuby() {
   return;
 }
 
-//文字の挿入
+//插入字符
 function changeText(range: vscode.Range, text: string) {
   const editor = vscode.window.activeTextEditor;
   editor?.edit((TextEditorEdit: vscode.TextEditorEdit) => {

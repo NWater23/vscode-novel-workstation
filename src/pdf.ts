@@ -17,7 +17,7 @@ export function previewpdf() {
 export async function exportpdf(preview: boolean | undefined): Promise<void> {
   const myHtml = getPrintContent();
   if (!vscode.workspace.workspaceFolders) {
-    vscode.window.showWarningMessage(`ワークスペースが見つかりません`);
+    vscode.window.showWarningMessage(`找不到Workspace`);
     return;
   } else {
     let fileName: string | undefined;
@@ -67,32 +67,32 @@ export async function exportpdf(preview: boolean | undefined): Promise<void> {
         vivlioLaunching = preview ? true : false;
         if (preview) {
           vscode.window.showInformationMessage(
-            `プレビュー起動中……\n初回起動には少々時間がかかります`
+            `准备预览中... \n首次启动需要一些时间`
           );
         } else {
           vscode.window.showInformationMessage(
-            `Vivliostyle起動中……\n初回起動には少々時間がかかります`
+            `Vivliostyle启动中...\n首次启动需要一些时间`
           );
         }
         const vivlioProcess = cp.exec(
           `${vivlioCommand} ${vivlioSubCommand} ${execPath} ${vivlioExportOption} ${vivlioExportPath}`,
           (err, stdout, stderr) => {
             if (err) {
-              output.appendLine(`Vivlioエラー: ${err.message}`);
+              output.appendLine(`Vivlio报告错误: ${err.message}`);
               vivlioLaunching = false;
               return;
             }
             if (stdout) {
-              console.log(`Vivlio出力： ${stdout}`);
+              console.log(`Vivlio输出： ${stdout}`);
             }
             if (stderr) {
-              console.log(`Vivlioエラー出力： ${stderr}`);
+              console.log(`Vivlio输出错误： ${stderr}`);
             }
             if (!preview) {
-              output.appendLine(`ファイル名: ${stdout}`);
-              output.appendLine("PDFの保存が終わりました");
+              output.appendLine(`文件名: ${stdout}`);
+              output.appendLine("PDF保存完成");
             }
-            vscode.window.showInformationMessage(`PDFの保存が終わりました`);
+            vscode.window.showInformationMessage(`PDF保存完成`);
             vivlioLaunching = false;
           }
         );
@@ -107,14 +107,14 @@ export async function exportpdf(preview: boolean | undefined): Promise<void> {
           );
         });
       } else {
-        vscode.window.showInformationMessage(`プレビューが作成されました`);
+        vscode.window.showInformationMessage(`预览创建完成`);
       }
     });
   }
 }
 
 function getPrintContent() {
-  //configuration 読み込み
+  //读取配置configuration
 
   const myText = editorText("active").replace(
     /<span id="cursor">(.*)<\/span>/g,
@@ -122,14 +122,14 @@ function getPrintContent() {
   );
   const previewSettings: NovelSettings = getConfig();
   const writingDirection = previewSettings.writingDirection;
-  const printBoxInlineLength = (writingDirection === 'vertical-rl')? 168: 124.32; // ドキュメント高さの80%(上下マージン10%を抜いた数)
-  const printBoxBlockSize = (writingDirection === 'vertical-rl')? 124.32: 168; // ドキュメント幅の84%(左右マージン16%を抜いた数)
+  const printBoxInlineLength = (writingDirection === 'vertical-rl')? 168: 124.32; // 文档高度的80％（上下边缘的10％的数量）
+  const printBoxBlockSize = (writingDirection === 'vertical-rl')? 124.32: 168; // 文档宽度的84％（左右边缘的数量通过16％）
   const fontSize =
     previewSettings.lineLength >
     previewSettings.linesPerPage * 1.75 * (printBoxInlineLength / printBoxBlockSize)
       ? printBoxInlineLength / previewSettings.lineLength
       : printBoxBlockSize / (previewSettings.linesPerPage * 1.75);
-  // フォントサイズ in mm
+  // 毫米的字体尺寸
   const fontSizeWithUnit = fontSize + "mm";
   const lineHeightWithUnit = fontSize * 1.75 + "mm";
   const projectTitle = vscode.workspace.workspaceFolders![0].name;
@@ -230,7 +230,7 @@ function getPrintContent() {
           margin-bottom: 5%;
           writing-mode: horizontal-tb;
           font-size:10q;
-          /* CSS仕様上は@pageルール内に書けばよいが、現時点のvivliostyle.jsの制限によりここに書く */
+          /* 在CSS规范中，您可以在@page规则中写入，但这是当前的vivliostyle.js限制。 */
       }
     }
       
@@ -238,14 +238,14 @@ function getPrintContent() {
         margin-left: 6%;
         margin-right: 10%;
         /* border-bottom: 1pt solid black; */
-      /* 右下ノンブル */
+      /* 右下角 */
       @bottom-right {
           content: ${pageNumberFormatR}
           margin-right: 0mm;
           margin-bottom: 5%;
           writing-mode: horizontal-tb;
           font-size:10q;
-          /* CSS仕様上は@pageルール内に書けばよいが、現時点のvivliostyle.jsの制限によりここに書く */
+          /* 在CSS规范中，您可以在@page规则中写入，但这是当前的vivliostyle.js限制。 */
       }
       }
   
@@ -269,13 +269,13 @@ function getPrintContent() {
       }
 
       h1 {
-      /* フォント */
+      /* 字体 */
       font-weight: Extrabold;
-      /* フォントサイズ */
+      /* 字体大小 */
       font-size: 24q;
       /* 字下げ */
       text-indent: 0;
-      /* 直後の改ページ・改段禁止 */
+      /* 页面之后・改段禁止 */
       page-break-before: always;
       page-break-after: always;
       line-height: 42q;
@@ -285,13 +285,13 @@ function getPrintContent() {
       }
   
       h2 {
-      /* フォント */
+      /* 字体 */
       font-weight: Demibold;
-      /* フォントサイズ */
+      /* 字体大小 */
       font-size: 16q;
       /* 字下げ */
       text-indent: 3em;
-      /* 直後の改ページ・改段禁止 */
+      /* 页面之后・改段禁止 */
       page-break-before: always;
       page-break-after: avoid;
       line-height: 42q;
@@ -422,7 +422,7 @@ function getPrintContent() {
     letter-spacing: normal;
     }
 
-    /*画像＋キャプション*/
+    /*画像＋标题*/
     figure {
     display: block;
     width: 236pt;
@@ -442,12 +442,12 @@ function getPrintContent() {
     font-size: 7pt;
     }
 
-    /*奥付*/
+    /*版权*/
     .colophon {
     font-size: 7pt;
     margin-right: 48pt;
     }
-    /* 級さげ */
+    /* 小字 */
     span.smaller{
         font-size:6.5pt
     }

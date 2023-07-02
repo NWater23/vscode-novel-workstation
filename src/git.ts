@@ -20,7 +20,7 @@ export class NovelGit {
 
   public _getDayBackString(filePath: string): any {
     // https://qiita.com/nju33/items/3905105900e7ae726d19
-    // Gitで過去のある時点のファイルの内容を見る
+    // 在git中的某个点查看文件的内容
     // git show `git log -1 --format='%h' --before=midnight`:package.json
     //let result = '';
     const relatevePath = path.relative(this.projectPath, filePath);
@@ -34,12 +34,12 @@ export class NovelGit {
       .log(logOption)
       .catch((err) => {
         console.error("failed:", err);
-        // vscode.window.showInformationMessage(`昨日以前に書かれた原稿がGitにコミットされていないようです`);
+        // vscode.window.showInformationMessage(`昨天之前的文件似乎在git存储库中不可用`);
       })
       .then((logs: any) => {
         //console.log(logs);
         if (logs.total === 0) {
-          //  vscode.window.showInformationMessage(`昨日以前に書かれた原稿がGitにコミットされていないようです`);
+          //  vscode.window.showInformationMessage(`昨天之前的文件似乎在git存储库中不可用`);
         } else {
           latestHash = logs.all[0].hash;
           showString = latestHash + ":" + relatevePath;

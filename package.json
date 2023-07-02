@@ -4,7 +4,7 @@
   "publisher": "TaiyoFujii",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ttrace/vscode-language-japanese-novel.git"
+    "url": "git+https://github.com/NWater23/vscode-novel-workstation.git"
   },
   "icon": "resource/icon.png",
   "engines": {
@@ -43,39 +43,39 @@
     "commands": [
       {
         "command": "Novel.vertical-preview",
-        "title": "Novel:縦書きプレビュー"
+        "title": "Novel:纵向排版预览"
       },
       {
         "command": "Novel.change-tenseAspect",
-        "title": "Novel:文末辞入れ替え"
+        "title": "Novel:句子替换"
       },
       {
         "command": "Novel.add-ruby",
-        "title": "Novel:ルビ挿入"
+        "title": "Novel:插入注音(Ruby)"
       },
       {
         "command": "Novel.launch-preview-server",
-        "title": "Novel:プレビューサーバー起動"
+        "title": "Novel:预览：启动Web服务"
       },
       {
         "command": "Novel.preview-pdf",
-        "title": "Novel:PDFプレビュー"
+        "title": "Novel:PDF预览"
       },
       {
         "command": "Novel.export-pdf",
-        "title": "Novel:PDF出力"
+        "title": "Novel:导出PDF"
       },
       {
         "command": "Novel.compile-draft",
-        "title": "Novel:原稿のコンパイル"
+        "title": "Novel:编译原稿"
       },
       {
         "command": "Novel.set-counter",
-        "title": "Novel:締め切りフォルダー"
+        "title": "Novel:设置截至日期"
       },
       {
         "command": "draftTree.refresh",
-        "title": "再表示",
+        "title": "Novel:重载文件资源",
         "icon": "$(refresh)"
       }
     ],
@@ -91,7 +91,9 @@
       {
         "id": "novel",
         "extensions": [
-          ".txt"
+          ".txt",
+          ".md",
+          ".markdown"
         ],
         "configuration": "./novel.language-configuration.json"
       }
@@ -104,7 +106,7 @@
       }
     ],
     "configuration": {
-      "title": "Novel-writer設定",
+      "title": "Novel Workstation 设定",
       "properties": {
         "Novel.preview.writingDirection":{
           "type":"string",
@@ -113,22 +115,22 @@
             "縦",
             "横"
           ],
-          "description": "プレビューの行方向を指定できます"
+          "description": "预览的排版方向"
         },
         "Novel.preview.fontFamily": {
           "type": "string",
           "default": "serif",
-          "description": "プレビュー用のフォント名を入力してください。 \ne.g. \"UD Digi Kyokasho NK-R\",\"ヒラギノ明朝 ProN W3\", \"HiraMinProN-W3\", serif, sans-serif;"
+          "description": "输入预览的字体名称。 \ne.g. \"UD Digi Kyokasho NK-R\",\"ヒラギノ明朝 ProN W3\", \"HiraMinProN-W3\", serif, sans-serif;"
         },
         "Novel.preview.lineLength": {
           "type": "number",
           "default": "40",
-          "description": "一行の文字数を指定してください\n行数はプレビュー、印刷どちらも有効です"
+          "description": "请指定一行中字符的数量\n对预览、打印均生效"
         },
         "Novel.preview.linesPerPage": {
           "type": "number",
           "default": "16",
-          "description": "PDF作成時の印刷時の1ページの行数を指定してください"
+          "description": "创建PDF时打印时一页上的行数"
         },
         "Novel.preview.pageStarting": {
           "type": "string",
@@ -137,12 +139,12 @@
             "右",
             "左"
           ],
-          "description": "PDFがどちらのページから始まるか指定してください"
+          "description": "请指定PDF以哪个页面开头"
         },
         "Novel.preview.originPageNumber":{
           "type": "number",
           "default": 1,
-          "description": "ページ番号の開始番号を指定してください"
+          "description": "请指定页码的开始号"
         },
         "Novel.preview.numberFormatR": {
           "type": "string",
@@ -152,22 +154,22 @@
         "Novel.preview.numberFormatL": {
           "type": "string",
           "default": "${pageNumber} ${projectTitle} ${typesettingInformation}",
-          "description": "ページ番号のフォーマットを指定してください\n利用できる変数は以下を参照してください\nページ数：${pageNumber}／組版情報：${typesettingInformation}／プロジェクト名：${projectTitle}　（フォルダーの名称）\np${pageNumber}と設定すると、p123のように表示されます"
+          "description": "请指定页码格式\n请参阅下面的可用变量\n页数：${pageNumber}／板信息：${typesettingInformation}／项目名：${projectTitle}　（文件夹名称）\np${pageNumber}如果设置，它将像P123一样显示。"
         },
         "Novel.preview.animate": {
           "type": "boolean",
           "default": true,
-          "description": "縦書きプレビューのスクロールをアニメーション表示する"
+          "description": "纵向排版预览滚动动画"
         },
         "Novel.preview.semanticHighligting": {
           "type": "boolean",
           "default": true,
-          "description": "品詞ハイライトを行う\n設定は再読み込み後に有効になります"
+          "description": "使用词性高亮\n设置重新加载后生效"
         },
         "Novel.editor.sceneNavigator": {
           "type": "boolean",
           "default": true,
-          "description": "次のシーン、前のシーンを開くためのナビゲーターを表示する"
+          "description": "显示导航器以打开下一个场景、上一个场景"
         },
         "Novel.compile.separator": {
           "type": "string",
@@ -175,12 +177,12 @@
           "enum": [
             "*"
           ],
-          "description": "テキストファイルを結合する際に、フォルダーの区切り文字を指定してください（実装中）"
+          "description": "合并文本文件时指定文件夹分隔符（实现）"
         },
         "Novel.preview.userRegex": {
           "type": "array",
           "default": [],
-          "description": "正規表現でHTML出力を調整することができます。複数の処理を行う場合は配列を増やしてください。\n（例） [\"い\", \"<span class='small'>ゐ</span>]\",[\"<p>[^「](.+?)</p>\",\"<p>　$1</p>\"], [ RegExp , Str ]）"
+          "description": "您可以使用正则表达式调整 HTML 输出。 执行多个进程时增加数组。\n（例） [\"い\", \"<span class='small'>ゐ</span>]\",[\"<p>[^「](.+?)</p>\",\"<p>　$1</p>\"], [ RegExp , Str ]）"
         }
       }
     },
@@ -210,7 +212,7 @@
       "activitybar": [
         {
           "id": "novelPanel",
-          "title": "ノベルライター",
+          "title": "小说工作站",
           "icon": "resource/icon.png"
         }
       ]
@@ -219,7 +221,7 @@
       "novelPanel": [
         {
           "id": "draftTreePanel",
-          "name": "原稿ツリー"
+          "name": "原稿树"
         }
       ]
     },
@@ -685,11 +687,11 @@
     "webpack-env": "^0.8.0",
     "xhr2": "^0.2.1"
   },
-  "description": "VS Codeの小説執筆を支援する機能拡張です",
+  "description": "将VS Code变成小说创作工作站",
   "bugs": {
-    "url": "https://github.com/ttrace/vscode-language-japanese-novel/issues"
+    "url": "https://github.com/NWater23/vscode-novel-workstation/issues"
   },
-  "homepage": "https://github.com/ttrace/vscode-language-japanese-novel#readme",
+  "homepage": "https://github.com/NWater23/vscode-novel-workstation#readme",
   "directories": {
     "test": "test"
   },
