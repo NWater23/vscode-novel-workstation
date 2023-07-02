@@ -308,7 +308,6 @@ export class DocumentSemanticTokensProvider
             openOffset = closeOffset;
             if (j == kuromojiToken.length - 1) {
               const endTime = performance.now();
-              console.log("Tokenize用时！", endTime - startTime);
 
               resolve(builder.build());
               //const builder = new vscode.SemanticTokensBuilder();

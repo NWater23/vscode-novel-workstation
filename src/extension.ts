@@ -29,12 +29,14 @@ emptyPort(function (port: number) {
   // console.log('真の空きポート',port);
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function emptyPort(callback: any) {
   let port = 8080;
 
   const socket = new net.Socket();
   const server = new net.Server();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   socket.on("error", function (e) {
     console.log("try:", port);
     server
@@ -65,9 +67,8 @@ function emptyPort(callback: any) {
   loop();
 }
 
-
-//注册命令
 export function activate(context: vscode.ExtensionContext): void {
+  //命令注册
   context.subscriptions.push(
     vscode.commands.registerCommand("Novel.compile-draft", compileDocs)
   );
@@ -108,13 +109,30 @@ export function activate(context: vscode.ExtensionContext): void {
     draftNodeTreeProvider.refresh()
   );
 
+  // 品詞ハイライトの初期化
   const kuromojiPath = context.extensionPath + "/node_modules/kuromoji/dict";
   activateTokenizer(context, kuromojiPath);
 
-  const characterCounter = new CharacterCounter();
+  // 文字数カウントの初期化
+  const characterCounter = new CharacterCounter(context);
   const controller = new CharacterCounterController(characterCounter);
   context.subscriptions.push(controller);
   context.subscriptions.push(characterCounter);
+
+  // console.log("前日の執筆数", context.workspaceState.get("totalCountPrevious"));
+  // console.log("前日", context.workspaceState.get("totalCountPreviousDate"));
+
+  // 前回記録した締切テキスト総数と記録日
+  const storedDeadlineCount = context.workspaceState.get("totacCountDeadline");
+  characterCounter.deadlineCountPrevious =
+    typeof storedDeadlineCount == "string" ? parseInt(storedDeadlineCount) : 0;
+  const storedDeadlineCountDate = context.workspaceState.get(
+    "totalCountDeadlineDate"
+  );
+  characterCounter.deadlineCountPreviousDate =
+    typeof storedDeadlineCountDate == "number"
+      ? storedDeadlineCountDate
+      : new Date(new Date()).getDate() - 1;
 
   const deadLineFolderPath = context.workspaceState.get("deadlineFolderPath");
   const deadLineTextCount = context.workspaceState.get("deadlineTextCount");
@@ -184,6 +202,7 @@ export function activate(context: vscode.ExtensionContext): void {
   documentRoot = vscode.Uri.joinPath(context.extensionUri, "htdocs");
 
   context.subscriptions.push(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vscode.commands.registerCommand("Novel.openfile", (args: any) => {
       vscode.commands.executeCommand("vscode.open", args);
     })
@@ -195,6 +214,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(codeLensProviderDisposable);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   vscode.workspace.onDidOpenTextDocument((e) => {
     const editor = vscode.window.activeTextEditor;
     if (typeof editor != "undefined") {
@@ -216,6 +236,7 @@ function launchserver(originEditor: vscode.TextEditor) {
   //Webサーバの起動。ドキュメントルートはnode_modules/novel-writer/htdocsになる。
   const viewerServer = http.createServer(function (request, response) {
     const Response = {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       "200": function (file: Buffer, filename: string) {
         //const extname = path.extname(filename);
         const header = {
@@ -241,6 +262,7 @@ function launchserver(originEditor: vscode.TextEditor) {
     };
 
     const uri = request.url;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let filename = path.join(documentRoot.fsPath, uri!);
 
     fs.stat(filename, (err, stats) => {
@@ -316,7 +338,10 @@ function launchserver(originEditor: vscode.TextEditor) {
           latestEditor.selection,
           vscode.TextEditorRevealType.InCenter
         );
-        vscode.window.showTextDocument(latestEditor.document, latestEditor.viewColumn);
+        vscode.window.showTextDocument(
+          latestEditor.document,
+          latestEditor.viewColumn
+        );
         ws.send(editorText(latestEditor));
       }
     });
@@ -411,7 +436,7 @@ function launchserver(originEditor: vscode.TextEditor) {
   }
 }
 
-function publishwebsockets(socketServer: { clients: WebSocket[]; }) {
+function publishwebsockets(socketServer: { clients: WebSocket[] }) {
   socketServer.clients.forEach((client: WebSocket) => {
     client.send(editorText("active"));
   });
@@ -425,10 +450,12 @@ function sendsettingwebsockets(socketServer: Server<WebSocket>) {
 
 let keyPressStored = false;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const publishWebsocketsDelay: any = {
-  publish: function (socketServer: { clients: WebSocket[]; }) {
+  publish: function (socketServer: { clients: WebSocket[] }) {
     publishwebsockets(socketServer);
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   presskey: function (s: any) {
     if (previewRedrawing) {
       //リドロー中

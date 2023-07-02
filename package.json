@@ -1,6 +1,6 @@
 {
   "name": "novel-writer",
-  "version": "1.9.2",
+  "version": "1.9.7",
   "publisher": "TaiyoFujii",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "fastest-levenshtein": "^1.0.16",
     "http": "^0.0.1-security",
     "http-server": "^14.1.1",
-    "kuromoji": "git+https://github.com/ttrace/kuromoji.js.git",
+    "kuromoji": "github:ttrace/kuromoji.js",
     "simple-git": "^3.18.0",
     "tree-model": "^1.0.7",
     "ws": "^8.13.0"
@@ -108,10 +108,10 @@
     "configuration": {
       "title": "Novel Workstation 设定",
       "properties": {
-        "Novel.preview.writingDirection":{
-          "type":"string",
-          "default":"縦",
-          "enum":[
+        "Novel.preview.writingDirection": {
+          "type": "string",
+          "default": "縦",
+          "enum": [
             "縦",
             "横"
           ],
@@ -141,7 +141,7 @@
           ],
           "description": "请指定PDF以哪个页面开头"
         },
-        "Novel.preview.originPageNumber":{
+        "Novel.preview.originPageNumber": {
           "type": "number",
           "default": 1,
           "description": "请指定页码的开始号"
@@ -149,7 +149,6 @@
         "Novel.preview.numberFormatR": {
           "type": "string",
           "default": "${projectTitle} ${typesettingInformation} ${pageNumber}"
-          
         },
         "Novel.preview.numberFormatL": {
           "type": "string",
