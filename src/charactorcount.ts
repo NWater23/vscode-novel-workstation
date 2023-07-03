@@ -21,7 +21,7 @@ import { totalLength, draftRoot } from "./compile";
 import simpleGit, { SimpleGit } from "simple-git";
 import { distance } from "fastest-levenshtein";
 
-import { countChineseCharacter } from "./chinesecount"
+import { countChineseCharacter, removeNonChineseCharacter } from "./chinesecount"
 
 let projectCharacterCountNum = 0;
 let countingFolderPath = "";
@@ -144,7 +144,7 @@ export class CharacterCounter {
       //テキストファイルを直接開いているとき
       this._statusBarItem.text = `$(note) ${Intl.NumberFormat().format(
         this._getCharacterCount(doc)
-      )} 文字`;
+      )} 字`;
     } else if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
       // 相対パスが'.'で始まっていない場合、subPathはbasePathに含まれる
 
@@ -239,11 +239,7 @@ export class CharacterCounter {
   public _getCharacterCount(doc: TextDocument): number {
     let docContent:string = doc.getText();
     // 删除未包含在计数中的字符
-    docContent = docContent
-      .replace(/((\S+?)|\{(.+?)\})?@([a-zA-Z0-9_]*?)(\[[a-zA-Z0-9_\s]+?\])?/g, "") // 实体标记
-      .replace(/《(.+?)》/g, "") // 红宝石范围指定的符号和字符
-      .replace(/[|｜]/g, "") // 红宝石启动符号
-      .replace(/<!--(.+?)-->/, ""); // 注释
+    docContent = removeNonChineseCharacter(docContent);
     return countChineseCharacter(docContent);
   }
 
@@ -404,7 +400,7 @@ export class CharacterCounter {
                           );
                           if (typeof showLog === "string") {
                             if (showLog == "") showLog = " ";
-                            this.latestText = showLog;
+                            this.latestText = removeNonChineseCharacter(showLog);
                             this.ifEditDistance = true;
                             this.updateCharacterCount();
                           }
@@ -423,7 +419,7 @@ export class CharacterCounter {
                   .show(showString)
                   .then((showLog) => {
                     if (typeof showLog === "string") {
-                      this.latestText = showLog;
+                      this.latestText = removeNonChineseCharacter(showLog);
                       this.ifEditDistance = true;
                       this.updateCharacterCount();
                     }
@@ -445,7 +441,7 @@ export class CharacterCounter {
   }
 
   public _setLatestUpdate(latestGitText: string): void {
-    this.latestText = latestGitText;
+    this.latestText = removeNonChineseCharacter(latestGitText);
     console.log("latest from Git:", latestGitText);
     this._updateEditDistanceDelay();
   }
@@ -453,7 +449,9 @@ export class CharacterCounter {
   private keyPressFlag = false;
 
   public _updateEditDistanceActual(): void {
-    const currentText = window.activeTextEditor?.document.getText();
+    const currentText = removeNonChineseCharacter(
+      window.activeTextEditor?.document.getText() ? window.activeTextEditor?.document.getText() : ''
+    );
 
     if (this.latestText != null && typeof currentText == "string") {
       this.editDistance = distance(this.latestText, currentText);
