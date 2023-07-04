@@ -209,14 +209,14 @@ export class MyCodelensProvider implements vscode.CodeLensProvider {
         const prevLens = {
           command: "Novel.openfile",
           title: prevTitle + " ……"+ prevText,
-          tooltip: "打开上一个场景的文件",
+          tooltip: "打开上一章的文件",
           arguments: [prevUrl],
         };
 
         const nextLens = {
           command: "Novel.openfile",
           title: nextTitle,
-          tooltip: "打开下一个场景的文件",
+          tooltip: "打开下一章的文件",
           arguments: [nextUrl],
         };
 
@@ -270,7 +270,7 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
   let nextDocText = "";
 
   //console.log("搜索", docIndex, myFileList.files[docIndex]);
-  //搜索上一个场景文件
+  //搜索上一章文件
   let prevSearchIndex = docIndex - 1;
   while (prevSearchIndex >= 0) {
     if (myFileList.files[prevSearchIndex].dir) {
@@ -300,7 +300,7 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
     prevDocUrl = vscode.Uri.file(myFileList.files[prevDocIndex].dir!);
     const nextDocData = await vscode.workspace.fs.readFile(prevDocUrl);
     const dataString = Buffer.from(nextDocData).toString("utf8");
-    prevDocTitle = "前のシーン：" + myFileList.files[prevDocIndex].name;
+    prevDocTitle = "上一章：" + myFileList.files[prevDocIndex].name;
     prevDocText = dataString;
   }
 
@@ -310,7 +310,7 @@ async function getBesideText(document: vscode.TextDocument): Promise<{
     nextDocUrl = vscode.Uri.file(myFileList.files[nextDocIndex].dir!);
     const nextDocData = await vscode.workspace.fs.readFile(nextDocUrl);
     const dataString = Buffer.from(nextDocData).toString("utf8");
-    nextDocTitle = "次のシーン：" + myFileList.files[nextDocIndex].name;
+    nextDocTitle = "下一章：" + myFileList.files[nextDocIndex].name;
     nextDocText = dataString;
   }
 
