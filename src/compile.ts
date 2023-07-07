@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { getConfig } from "./config";
 import { deadLineFolderPath } from "./extension";
-import { countChineseCharacter } from "./chinesecount"
+import { countContentCharacter, removeNonContentCharacter } from "./contentcharacterutils"
 
 //如何使用FS模块 https://qiita.com/oblivion/items/2725a4b3ca3a99f8d1a3
 export default function compileDocs(): void {
@@ -140,9 +140,9 @@ export function fileList(dirPath: string): FileList {
       files.push({
         dir: path.join(dirPath, dirent.name),
         name: dirent.name,
-        length: countChineseCharacter(readingFile),
+        length: countContentCharacter(readingFile),
       });
-      characterCount += countChineseCharacter(readingFile);
+      characterCount += countContentCharacter(readingFile);
     }
   }
   //返回文件列表和字符总数
@@ -207,16 +207,17 @@ export function draftsObject(dirPath: string): FileNode[] {
         "utf-8"
       );
       //カウントしない文字を除外 from https://github.com/8amjp/vsce-charactercount by MIT license
-      readingFile = readingFile
-        .replace(/\s/g, "") // すべての空白文字
-        .replace(/《(.+?)》/g, "") // ルビ範囲指定記号とその中の文字
-        .replace(/[|｜]/g, "") // ルビ開始記号
-        .replace(/<!--(.+?)-->/, ""); // コメントアウト
+      // readingFile = readingFile
+      //   .replace(/\s/g, "") // すべての空白文字
+      //   .replace(/《(.+?)》/g, "") // ルビ範囲指定記号とその中の文字
+      //   .replace(/[|｜]/g, "") // ルビ開始記号
+      //   .replace(/<!--(.+?)-->/, ""); // コメントアウト
+      readingFile = removeNonContentCharacter(readingFile);
 
       const fileNode = {
         dir: path.join(dirPath, dirent.name),
         name: dirent.name,
-        length: countChineseCharacter(readingFile),
+        length: countContentCharacter(readingFile),
       };
       results.push(fileNode);
     }

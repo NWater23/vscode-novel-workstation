@@ -21,7 +21,7 @@ import { totalLength, draftRoot } from "./compile";
 import simpleGit, { SimpleGit } from "simple-git";
 import { distance } from "fastest-levenshtein";
 
-import { countChineseCharacter, removeNonChineseCharacter } from "./chinesecount"
+import { countContentCharacter, removeNonContentCharacter } from "./contentcharacterutils"
 
 let projectCharacterCountNum = 0;
 let countingFolderPath = "";
@@ -238,7 +238,7 @@ export class CharacterCounter {
 
   public _getCharacterCount(doc: TextDocument): number {
     const docContent:string = doc.getText();
-    return countChineseCharacter(docContent);
+    return countContentCharacter(docContent);
   }
 
   public _updateProjectCharacterCount(): void {
@@ -379,7 +379,7 @@ export class CharacterCounter {
                   .then((logsLatest) => {
                     if (logsLatest?.total === 0) {
                       window.showInformationMessage(
-                        `このファイルはまだコミットされていないようです`
+                        `文件未被git跟踪，因此历史不可用`
                       );
                       this.ifEditDistance = false;
                       this.latestText = null;
@@ -398,7 +398,7 @@ export class CharacterCounter {
                           );
                           if (typeof showLog === "string") {
                             if (showLog == "") showLog = " ";
-                            this.latestText = removeNonChineseCharacter(showLog);
+                            this.latestText = removeNonContentCharacter(showLog);
                             this.ifEditDistance = true;
                             this.updateCharacterCount();
                           }
@@ -417,7 +417,7 @@ export class CharacterCounter {
                   .show(showString)
                   .then((showLog) => {
                     if (typeof showLog === "string") {
-                      this.latestText = removeNonChineseCharacter(showLog);
+                      this.latestText = removeNonContentCharacter(showLog);
                       this.ifEditDistance = true;
                       this.updateCharacterCount();
                     }
@@ -439,7 +439,7 @@ export class CharacterCounter {
   }
 
   public _setLatestUpdate(latestGitText: string): void {
-    this.latestText = removeNonChineseCharacter(latestGitText);
+    this.latestText = removeNonContentCharacter(latestGitText);
     console.log("latest from Git:", latestGitText);
     this._updateEditDistanceDelay();
   }
@@ -447,7 +447,7 @@ export class CharacterCounter {
   private keyPressFlag = false;
 
   public _updateEditDistanceActual(): void {
-    const currentText = removeNonChineseCharacter(
+    const currentText = removeNonContentCharacter(
       window.activeTextEditor?.document.getText() ? window.activeTextEditor?.document.getText() : ''
     );
 
