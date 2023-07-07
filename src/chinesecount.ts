@@ -1,6 +1,14 @@
+export const ChineseCharacterRe = /[\u4e00-\u9fa5,;~?()（）【】，。；：“”‘’！？]/gi;
+export const nonChineseCharacterRe = /[^\u4e00-\u9fa50-9a-z,~;?()（）【】，。；：“”‘’！？]/gi;
+
 export function countChineseCharacter(doc: string): number {
-    const count = doc.match(/[\u4e00-\u9fa5]/g);
-    return count ? count.length : 0;
+    if(doc.startsWith('#')){
+        doc = doc.substring(doc.indexOf('\n'));
+    }
+    doc = doc.replace(/-+/gi,'');
+    const count = doc.match(ChineseCharacterRe);
+    const halfCount = doc.match(/[0-9-]+|[a-z-]+/gi);
+    return (count ? count.length : 0) + (halfCount ? halfCount.length : 0);
 }
 
 export function removeNonChineseCharacter(doc: string): string {
@@ -11,5 +19,5 @@ export function removeNonChineseCharacter(doc: string): string {
         .replace(/《(.+?)》/g, "") // 红宝石范围指定的符号和字符
         .replace(/[|｜]/g, "") // 红宝石启动符号
         .replace(/<!--(.+?)-->/, "") // 注释
-        .replace(/[^\u4e00-\u9fa5]/g,'');
+        .replace(nonChineseCharacterRe,'');
 }

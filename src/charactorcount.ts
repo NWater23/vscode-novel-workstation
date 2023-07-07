@@ -237,9 +237,7 @@ export class CharacterCounter {
   }
 
   public _getCharacterCount(doc: TextDocument): number {
-    let docContent:string = doc.getText();
-    // 删除未包含在计数中的字符
-    docContent = removeNonChineseCharacter(docContent);
+    const docContent:string = doc.getText();
     return countChineseCharacter(docContent);
   }
 
