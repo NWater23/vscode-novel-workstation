@@ -103,6 +103,9 @@ class draftTreeItem extends vscode.TreeItem {
     this.label = draftItem.name.replace(
       /^([0-9]+[-_\s]){0,1}(.+)(\.txt|\.md|\.markdown)$/,
       "$2"
+    ).replace(
+      /_/gi,
+      " "
     );
     this.description = `:${Intl.NumberFormat().format(draftItem.length)}字`;
     this.resourceUri = filePath;
