@@ -229,7 +229,7 @@ export class CharacterCounter {
       if (this._countingTargetNum != 0) {
         targetNumberText += "/" + countingTarget;
       }
-      this._statusBarItem.text = ` ${totalCharacterCount}${totalWritingProgressString}字  $(folder-opened) ${this._folderCount.label} ${targetNumberText}字  $(note) ${characterCount}${writingProgressString} 字 ${editDistance}`;
+      this._statusBarItem.text = ` $(book) ${totalCharacterCount}${totalWritingProgressString}字  $(folder-opened) ${this._folderCount.label} ${targetNumberText}字  $(note) ${characterCount}${writingProgressString} 字 ${editDistance}`;
     } else {
       this._statusBarItem.text = `$(book) ${totalCharacterCount}${totalWritingProgressString}字／$(note) ${characterCount} ${writingProgressString}字${editDistance}`;
     }

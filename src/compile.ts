@@ -132,11 +132,7 @@ export function fileList(dirPath: string): FileList {
         "utf-8"
       );
       //排除未从https://github.com/8amjp/vsce-charactercount计算的字符
-      readingFile = readingFile
-        .replace(/\s/g, "") // 所有空白字符
-        .replace(/《(.+?)》/g, "") // Ruby(ルビ)区域指定的符号及其字符
-        .replace(/[|｜]/g, "") // Ruby(ルビ)启动符号
-        .replace(/<!--(.+?)-->/, ""); // 注释
+      readingFile = removeNonContentCharacter(readingFile);
       files.push({
         dir: path.join(dirPath, dirent.name),
         name: dirent.name,
